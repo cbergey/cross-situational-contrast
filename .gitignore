@@ -40,3 +40,5 @@ cosub/*
 auth.json
 settings.json
 production-results/*
+
+*.DS_Store
