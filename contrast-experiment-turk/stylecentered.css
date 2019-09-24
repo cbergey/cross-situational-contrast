@@ -1,0 +1,220 @@
+/**
+## General styles
+This stuff can be ported from experiment to experiment.*/
+
+/** We want the page to sit flush inside the browser window - that means no margins or padding. Also, use a nice-looking serif font. */
+body {
+	padding: 0;
+	margin: 0;
+	font-family: Lato, Helvetica, sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
+
+
+/** We manage display using "slides". A slide is a <code>div</code> that takes up the entire page. Only one slide should be visible at a time. Navigation between slides is most sensibly accomplished using buttons, rather than keyboard events. */
+.slide {
+	width: 95%;
+	height: 95%;
+	display: none;
+	position: absolute;
+	margin: 0;
+	margin-left: 0.5%;
+	
+	padding: 1% 2% 1% 2%;
+}
+
+input, select, button {font-family: Lato, Helvetica, sans-serif; font-size: 14px;}
+
+button {
+	top: 500px;
+	background: url(images/button-gradient.png);
+	border: 1px solid #999;
+	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	margin: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	height: 29px;
+	min-width: 70px;
+	position:fixed;
+}
+
+
+
+
+button:active {
+	border-left: 1px solid #c9c9c9;
+	border-top: 1px solid #c9c9c9;
+	background: none;
+	background-color: #c9c9c9;
+}
+
+button[disabled] {
+	background: url(images/button-gradient.png);
+	border: 1px solid #999;
+	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	cursor: not-allowed;
+}
+
+.kidButton {
+	background: url(images/orange-button.png);
+	border: 0px;
+	border-top: 0px;
+	border-left: 0px;
+}
+
+.square {
+	width: 20px;
+	height: 20px;
+	background: red;
+}
+
+.border {
+	width: 125px;
+	height: 125px;
+	border: 2px solid black;
+	background: transparent;
+}
+
+
+
+
+h2 {
+  margin-bottom:0;
+}
+h3 {
+  margin:0 0 30px;
+} 
+.ui-slider-range {
+   background:green;
+}
+.percent {
+  color:green;
+  font-weight:bold;
+  text-align:center;
+  width:100%;
+  border:none;
+}
+
+
+
+
+
+
+/**
+## Experiment-specific styles
+This stuff will vary by experiment.
+*/
+
+#logo-text {
+  font-weight: bold;
+}
+
+#instructions {
+  text-align: center;
+}
+
+
+.block-text {
+  width: 500px;
+  text-align: justify;
+  margin: 0 auto;
+  margin-bottom: 1em;
+}
+
+#legal {
+  margin: 0 auto;
+  margin-top: 1.5em;
+  font-size: 0.8em;
+}
+
+#target {
+	
+}
+
+#slider {
+	margin-top:200px;
+
+}
+
+#sliderlabel {
+	position:absolute;
+	margin-top:-20px;
+	margin-left:700px;
+}
+
+#sobject1 {
+	
+}
+
+#sobject2 {
+	
+}
+
+#sobject3 {
+	
+}
+
+#sobject4 {
+	
+}
+
+#testimg {
+
+}
+
+#startimg {
+	
+}
+
+
+/*Below lifted from https://www.sitepoint.com/community/t/can-anyone-tell-me-how-to-create-wiggle-effect/22399/4*/
+
+@-webkit-keyframes wiggle {
+    0% {-webkit-transform:rotate(3deg);}
+    50% {-webkit-transform:rotate(-3deg);}
+    100% {-webkit-transform:rotate(3deg);}
+}
+
+@-moz-keyframes wiggle {
+    0% {-moz-transform:rotate(3deg);}
+    50% {-moz-transform:rotate(-3deg);}
+    100% {-moz-transform:rotate(3deg);}
+}
+
+@keyframes wiggle {
+    0% {transform:rotate(3deg);}
+    50% {transform:rotate(-3deg);}
+    100% {transform:rotate(3deg);}
+}
+
+#testimg.wiggle1 {
+    -webkit-animation: wiggle 0.3s;
+    -moz-animation: wiggle 0.3s;
+}
+
+
+#sobject1.wiggle1 {
+    -webkit-animation: wiggle 0.3s;
+    -moz-animation: wiggle 0.3s;
+}
+
+
+#sobject2.wiggle1 {
+    -webkit-animation: wiggle 0.3s;
+    -moz-animation: wiggle 0.3s;
+}
+
+
+#sobject3.wiggle1 {
+    -webkit-animation: wiggle 0.3s;
+    -moz-animation: wiggle 0.3s;
+}
+
+
+#sobject4.wiggle1 {
+    -webkit-animation: wiggle 0.3s;
+    -moz-animation: wiggle 0.3s;
+}
