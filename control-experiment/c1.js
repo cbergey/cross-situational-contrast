@@ -7,9 +7,9 @@
 // ---------------- PARAMETERS ------------------
 
 
-var numtrials = 10;
+var numtrials = 40;
 
-var numtest = 12;
+var numtest = 20;
 
 var usesound = false;
 
@@ -61,13 +61,21 @@ function createArray(length) {
     return arr;
 }
 
+function createBins(dist) {
+	var placeindist = 0
+	for (i = 0; i < dist.length; i++) {
+		bins[i][0] = placeindist;
+		placeindist += dist[i];
+		bins[i][1] = placeindist;
+	}
+	featureextent = placeindist;
+}
+
 
 
 
 // STIMULI AND TRIAL TYPES
 
-
-// ADD SHAPE 1 BACK FOR FINAL VERSION
 
 var shapes = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"];
 
@@ -75,16 +83,35 @@ var words = ["dax", "blicket", "wug", "toma", "gade", "sprock","koba","zorp", "f
 
 var colors = ["red", "blue", "green", "purple"];
 
-var trialtypes = [1,1,1,1,1,2,2,2,2,2];
+var trialtypes = [1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2];
 
-var testtrials = [1,1,1,2,2,2,3,3,3,4,4,4];
+var testtrials = [1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2];
 
 var sizes = ["big","small"];
 
+var left = [1, 1, 2, 2, 4, 6, 7, 7, 6, 4]
 
+var right = [4, 6, 7, 7, 6, 4, 2, 2, 1, 1]
+
+var center = [1, 2, 4, 6, 7, 7, 6, 4, 2, 1]
+
+var bins = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
+
+var featureextent = 0;
+
+var minsize = 100;
+
+var maxsize = 500;
+
+var binsize = (maxsize - minsize)/center.length
 
 
 //-----------------------------------------------
+
+
+createBins(left)
+
+console.log(bins)
 
 showSlide("prestudy");
 
@@ -105,7 +132,7 @@ var experiment = {
 
 	targetcolor: "",
 
-	targetsize: "",
+	targetsize: 0,
 
 	targetword: "",
 
@@ -240,6 +267,29 @@ var experiment = {
 		experiment.data.push(dataforRound);	
 	},
 
+	getBin: function(number) {
+		for (i = 0; i < bins.length; i++) {
+			if (bins[i][0] <= number && number < bins[i][1]) {
+				return i;
+			}
+		}
+	},
+
+	drawFeature: function() {
+		randomdraw = Math.random()*featureextent
+		bin = experiment.getBin(randomdraw)
+		size = (bin + 1) * binsize + minsize + (Math.random()*binsize);
+		console.log(size)
+		return size;
+	},
+
+	drawUniform: function() {
+		randomdraw = Math.random()*(maxsize - minsize)
+		size = randomdraw + minsize;
+		console.log(size)
+		return size;
+	},
+
 	test: function(phase) {
 		if (experiment.counter > (numtrials + numtest)) {
 			$("#teststage").hide()
@@ -278,8 +328,26 @@ var experiment = {
 		// ADD START TIME FOR RTS
 
 		if (experiment.counter == (numtrials + 1)) {
+
 			$("#bin1").attr("src","images/red-bucket.png")
 			$("#bin2").attr("src","images/green-bucket.png")
+			$(document).keypress(function(e){
+    				var checkWebkitandIE=(e.which==26 ? 1 : 0);
+    				var checkMoz=(e.which==122 && e.ctrlKey ? 1 : 0);
+
+    				if (checkWebkitandIE || checkMoz) $("body").append("<p>ctrl+z detected!</p>");
+    				experiment.rtsearch = Date.now() - experiment.starttime;
+				
+						experiment.processOneRow();
+
+						
+						experiment.counter++;
+						
+						setTimeout(function() {
+							$("#searchstage").fadeOut(100);
+							experiment.test("test");
+						}, 100);
+				});
 				$( "#bin1" ).click(function() {
 					if (experiment.canclick) {
 						experiment.canclick = false;
@@ -328,7 +396,7 @@ var experiment = {
 		$("#bin2").show()
 
 		setTimeout(function(){
-			$("#teststage").fadeIn(500)
+			$("#teststage").fadeIn(100)
 			$("#bin1").show()
 			$("#bin2").show()
 			$("#tobject1").show()
@@ -373,11 +441,11 @@ var experiment = {
 
 		experiment.searchtype = ""
 
-		if (experiment.trialtype%2 == 0) {
-			experiment.sizeasked = true;
-		} else {
-			experiment.sizeasked = false;
-		}
+		// if (experiment.trialtype%2 == 0) {
+		// 	experiment.sizeasked = true;
+		// } else {
+		// 	experiment.sizeasked = false;
+		// }
 	
 
 		if (phase == "search") {
@@ -386,22 +454,35 @@ var experiment = {
 
 			trialcolors = shuffle(trialcolors);
 
-			
-
-			
   			experiment.targetcolor = trialcolors.pop();
 
 			experiment.numclicks = 0;
 
-			if (experiment.sizeasked == true) {
-				$("#sobject1").attr("src", "stim-images/object" + experiment.targetshape + experiment.targetcolor + experiment.abnormalsize + ".jpg");
-				$("#sinstructions").text("\"Tap on the " + experiment.abnormalsize + " " + experiment.targetword + "!\"")
-			} else {
-				$("#sobject1").attr("src", "stim-images/object" + experiment.targetshape + experiment.targetcolor + experiment.normalsize + ".jpg");
-				$("#sinstructions").text("\"Tap on the " + experiment.targetword + "!\"")
-			}
-	
+			// if (experiment.sizeasked == true) {
+			// 	$("#sobject1").attr("src", "stim-images/object" + experiment.targetshape + experiment.targetcolor + experiment.abnormalsize + ".jpg");
+			// 	$("#sinstructions").text("\"Tap on the " + experiment.abnormalsize + " " + experiment.targetword + "!\"")
+			// } else {
+			// 	$("#sobject1").attr("src", "stim-images/object" + experiment.targetshape + experiment.targetcolor + experiment.normalsize + ".jpg");
+			// 	$("#sinstructions").text("\"Tap on the " + experiment.targetword + "!\"")
+			// }
 
+			experiment.targetsize = experiment.drawFeature()
+
+			if (experiment.trialtype == 1) {
+				$("#sobject1").attr("src", "stim-images/object" + experiment.targetshape + experiment.targetcolor + "big.jpg");
+				$("#sinstructions").text(experiment.targetword)
+			} else {
+				var shapenum = Math.round(Math.random()*10)
+				var shape = experiment.shapes[shapenum]
+				var name = experiment.words[shapenum]
+				$("#sobject1").attr("src", "stim-images/object" + shape + experiment.targetcolor + "big.jpg");
+				$("#sinstructions").text(name)
+			}
+
+			$("#sobject1").width(experiment.targetsize)
+
+			$("#sinstructions2").text("Press J for " + experiment.targetword + " fruits. Press F for all other fruits.")
+			
 
 			$(sobject1).css({"border-color": "#FFFFFF", 
          			"border-width":"2px", 
@@ -409,6 +490,24 @@ var experiment = {
 
 
   			if (experiment.counter == 1) {
+  				$(document).keypress(function(e){
+    				var checkWebkitandIE=(e.which==26 ? 1 : 0);
+    				var checkMoz=(e.which==122 && e.ctrlKey ? 1 : 0);
+
+    				if (checkWebkitandIE || checkMoz) $("body").append("<p>ctrl+z detected!</p>");
+    				experiment.rtsearch = Date.now() - experiment.starttime;
+				
+						experiment.processOneRow();
+
+						
+						experiment.counter++;
+						
+						setTimeout(function() {
+							$("#searchstage").fadeOut(100);
+							experiment.next("search");
+						}, 100);
+				});
+
 				$( "#sobject1" ).click(function() {
 					if (experiment.canclick) {
 						experiment.canclick = false;
@@ -433,8 +532,9 @@ var experiment = {
 			}
 
 
-			setTimeout(function(){$("#searchstage").fadeIn(500)},300);
+			setTimeout(function(){$("#searchstage").fadeIn(100)},100);
 			$("#sinstructions").show()
+			$("#sinstructions2").show()
 					
 
 			if (usesound) {
@@ -447,7 +547,7 @@ var experiment = {
 			
 		    experiment.starttime = Date.now();
 		    if (usesound) {setTimeout(function() {trialsound.play();}, 1500)}
-		    setTimeout(function() {experiment.canclick = true;}, 1000)
+		    setTimeout(function() {experiment.canclick = true;}, 100)
 
 		} 
 	},
