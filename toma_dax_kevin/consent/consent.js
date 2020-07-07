@@ -8,8 +8,7 @@ const getCheckedRadioValue = (name) => {
 }
 
 function form_ok() {
-  return getCheckedRadioValue('age') == "eighteen" &&
-  getCheckedRadioValue('understand') == "understood" &&  getCheckedRadioValue('give_consent') == "consent"
+  return getCheckedRadioValue('age') == "eighteen" && getCheckedRadioValue('understand') == "understood" &&  getCheckedRadioValue('give_consent') == "consent"
 }
 
 function disable(id){
