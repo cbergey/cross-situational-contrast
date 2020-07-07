@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>toma dax experiment</title>
+        <script src="jspsych-6.1.0/jspsych.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-image-keyboard-response.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
+        <script src="jspsych-6.1.0/plugins/jspsych-image-button-response.js"></script>
+        <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+        
+        <style>
+            div.absolute {
+                position: absolute;
+                top: 500px;
+                left: 400px;
+                width: 500px;
+                height: 50px;
+            }
+
+            div.container {
+                position:relative;
+            }
+
+            div.displayedAlt {
+                position:absolute;
+                bottom: 0px;
+            } 
+
+            div.displayed {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+    </head>
+    <body>
+    </body>
+    <script>
+        var timeline = [];
+
+        var instructions_button = {
+            type: 'html-button-response',
+            stimulus: "<p style='font-size:15px; line-height:22px;'>THE UNIVERSITY OF CHICAGO<br>"
+            + "Communication and Learning Lab<br>"
+            + "Principal Investigator: Daniel Yurovsky</p>"
+            + "<div style='width:550px;'> <p style='font-size:15px; line-height:22px; text-align:left;'>"
+            + "DESCRIPTION: We are asking you to participate in a research study about language learning."
+            + "In this study, we will present you with a variety of stimuli, including natural and artificial language samples," 
+            + "pictures of known or unknown objects, and/or movies of people talking. "
+            + "Sometimes some of the speech you will hear will be from a foreign or made-up language. Participation should take about 3 minutes*. </p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>"
+            + "RISKS AND BENEFITS: The risks to your participation in this online study are those associated with basic computer tasks, including"
+            + "boredom, fatigue, mild stress, or breach of confidentiality. The only benefit to you is the learning experience from participating in a research study."
+            + "COMPENSATION: You will receive 30 cents for your participation. NOTE: This study contains comprehension checks to make sure that participants are paying attention."
+            + "As long as you read the instructions and complete the tasks, your HIT will be approved. If you fail these checks, your HIT will be rejected.</p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>" 
+            + "CONFIDENTIALITY: Your Mechanical Turk Worker ID will be used to distribute payment to you but will not be stored with the research data we collect from you."
+            + "Please be aware that your MTurk Worker ID can potentially be linked to information about you on your Amazon public profile page, depending on the settings you have" 
+            + "for your Amazon profile. We will not be accessing any personally identifying information about you that you may have put on your Amazon public profile page. </p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>"
+            + "The research is being conducted with the goal of publication in academic journals and presentations at academic conferences. Any reports and presentations"
+            + "about the findings from this study will not include your name or any other information that could identify you. We may share the data we collect in this study with other researchers – again, "
+            + "we will not include information that could identify you. </p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>"
+            + "SUBJECT’S RIGHTS: Your participation is voluntary. You may stop participating at any time by closing the browser window or the program to withdraw from the study. </p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>" 
+            + "CONTACT:  If you have any questions, comments, or concerns please contact Daniel Yurovsky at yurovsky@uchicago.edu. </p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>" 
+            + "For questions about your rights as a research participant, you may contact: </p>" 
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>" 
+            + "The Social and Behavioral Sciences Institutional Review Board<br>University of Chicago<br>Phone: (773) 834-7835<br>E-mail: sbs-irb@uchicago.edu</p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>"
+            + "In this task, you will see arrays of alien fruits with strange names. You'll be asked to pick one of them by clicking on it. You may not know which fruit is right. Make your best guess.</p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>" 
+            + "You will receive audio instructions throughout the task. Please adjust your volume to a comfortable level now. When you are ready, click the button below to begin.</p>"
+            + "<p style='font-size:15px; line-height:22px; text-align:left;'>" 
+            + "Please indicate by clicking the button below that you are at least 18 years old, have read and understand this consent form," 
+            + "and you agree to participate in this online research study. </p></div>", 
+            choices: ['Submit']
+        };
+        timeline.push(instructions_button);
+
+        var audio_instructions = {
+            type: 'image-button-response', 
+            stimulus: "img/speaker.png",
+            stimulus_height: 375,
+            stimulus_width: 375, 
+            prompt: "Make sure your audio is on. Press the button above to begin.",
+            choices: ['Start']
+        }
+        timeline.push(audio_instructions);
+        
+        var names = ["dax", "blicket", "wug", "toma", "gade", "sprock","koba","zorp", "flib", "boti", "quen", "lomet"];
+        var shapes = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"];
+        
+        var colors = ["red", "blue", "green", "purple"];
+        /*var sizes = ["big","small"];  just use HTML to adjust size of the image */
+        var sizes = [ [500], [400], [300], [200] ] ;
+        var littleSizes = [150, 200, 200, 200, 250, 250, 250, 250, 250, 300, 300, 300, 350]; /* size is 13 */
+        var bigSizes = [300, 350, 350, 350, 400, 400, 400, 400, 400, 450, 450, 450, 500];
+
+        var shuffled_little = jsPsych.randomization.shuffle(littleSizes);
+        var shuffled_big = jsPsych.randomization.shuffle(bigSizes);
+
+        var shuffled_names = jsPsych.randomization.shuffle(names);
+        var shuffled_shapes = jsPsych.randomization.shuffle(shapes);
+
+        var names_sample = jsPsych.randomization.sampleWithoutReplacement(shuffled_names, 2);
+        var shapes_sample = jsPsych.randomization.sampleWithoutReplacement(shuffled_shapes, 2); 
+
+        /*
+        var check = {
+            type: "html-keyboard-response", 
+            stimulus: shapes_sample, 
+            trial_duration: 3000
+        }
+        timeline.push(check);  
+        */
+        
+        var targetShape = shapes_sample[0]; /*  number */
+        var targetName = names_sample[0];  /*  name */ 
+
+        var distractorShape = shapes_sample[1];
+        var distractorName = names_sample[1];
+
+        /* first i want to have the "training phase" where people just press 
+        F for some fruit and J for another fruit */
+
+        var test_stimuli = [
+            {stimulus: targetShape, name: targetName},
+            {stimulus: distractorShape, name: distractorName}
+        ];   /* not using */ 
+        
+        /* for later, if i want to separate the actual trial from the procedure
+        var trial = {}
+        */
+
+        var procedure = {
+            timeline: [
+                /*  {
+                    type:"html-keyboard-response", 
+                    stimulus: targetName + chooseFruit,
+                    trial_duration: chooseFruit * 1000,
+                    choices: jsPsych.NO_KEYS
+                }, */
+                {
+                    type: "html-keyboard-response", 
+                    stimulus: function() {
+                        if (jsPsych.timelineVariable("name", true) == targetName) {
+                            var size = shuffled_little.pop();
+                        } else {
+                            var size = shuffled_big.pop();
+                        }
+                        /* var randNumber = Math.floor(Math.random() * 4); 
+                        var size = sizes[randNumber];   */
+                        return "<audio src='stimsounds/" + jsPsych.timelineVariable("name", true) + ".m4a', autoplay='true'></audio>" + 
+                        "<div class='displayed'>" + 
+                        "<div style='width: 700px;'>" + 
+                        "<div style='float: center;'>" + 
+                        "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>" + 
+                        "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
+                    },
+                    choices: ["f", "j"],
+                    /*
+                    response_ends_trial: false,
+                    trial_duration: 3000,
+                    */
+                    post_trial_gap: 750
+                }
+            ],
+            timeline_variables:  [
+                {stimulus: targetShape, name: targetName},
+                {stimulus: distractorShape, name: distractorName}
+            ],
+            sample: {
+                type: "fixed-repetitions", 
+                size: 13
+            }
+            /* randomize_order: true, 
+            repetitions: 13  */  /* because 13 size choices for toma, 13 size choices for dax */  
+        }
+        timeline.push(procedure);
+
+        var breakTime = {
+            timeline: [
+                {
+                    type: "html-keyboard-response", 
+                    stimulus: "We will now begin the testing phase. <p>Press F for " + targetName + ". Press J for " + distractorName + ".</p> <p>Press Space to begin.</p>",
+                    choices: ["space"]
+                }
+            ]
+        }
+        timeline.push(breakTime);
+
+        var testing = {
+            timeline: [
+                {
+                    type: "html-keyboard-response", 
+                    stimulus: function() {
+                        var randNumber = Math.floor(Math.random() * 4);
+                        var size = sizes[randNumber];
+                        return "Find the " + jsPsych.timelineVariable("name", true) + ". " +  
+                        "<div style='width: 700px;'>" + 
+                        "<div style='float: center;'>" + 
+                        "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div>" + 
+                            "<p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p>" + "size" + size
+                    },
+                    choices: ["f", "j"],
+                    post_trial_gap: 750
+                }
+            ],
+            timeline_variables:  [
+                {stimulus: targetShape, name: targetName},
+                {stimulus: distractorShape, name: distractorName}
+            ],
+            randomize_order: true,
+            repetitions: 2
+        }
+        timeline.push(testing);
+        /* reference below for image size adjusting */
+        /* return "<img style='width:100px; height:100px;' src='"+jsPsych.timelineVariable('image', true)+"'></img>";*/
+        
+        /*  for preloading images
+        var images = ['stim-images/object' + targetShape + 'bluebig.jpg',
+        "stim-images/object" + shapes_sample[3] + "bluebig.jpg",
+        "stim-images/object" + shapes_sample[2] + "bluebig.jpg",
+        "stim-images/object" + shapes_sample[1] + "bluebig.jpg",
+        "stim-images/object" + shapes_sample[0] + "bluebig.jpg"]; */
+
+        jsPsych.init({
+            timeline: timeline,
+            on_finish: function() {
+                jsPsych.data.displayData();
+            }
+            /*preload_images: images
+            default_iti: 500*/
+        });
+    
+    </script>
+</html>
+
