@@ -8,7 +8,7 @@
         <script src="jspsych-6.1.0/plugins/jspsych-html-button-response.js"></script>
         <script src="jspsych-6.1.0/plugins/jspsych-image-button-response.js"></script>
         <script src="jspsych-6.1.0/plugins/jspsych-external-html.js"></script>
-        <script src="consent/consent.js"></script>
+        <script src=“consent/consent.js”></script>
         <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
         
         <style>
@@ -35,6 +35,16 @@
                 display: block;
                 margin-left: auto;
                 margin-right: auto;
+                /* border: 5px solid #555555 -> probably don't want to have */
+            }
+
+            #rectangle {
+                width:45%;
+                height:435px;
+                border: 2px solid #555555;
+                position:fixed;
+                top:65px;
+                left:350px;
             }
         </style>
     </head>
@@ -72,11 +82,52 @@
         var shuffled_little = jsPsych.randomization.shuffle(littleSizes);
         var shuffled_big = jsPsych.randomization.shuffle(bigSizes);
 
-        var shuffled_names = jsPsych.randomization.shuffle(names);
-        var shuffled_shapes = jsPsych.randomization.shuffle(shapes);
+        var names_sample = jsPsych.randomization.sampleWithoutReplacement(names, 2);
+        var shapes_sample = jsPsych.randomization.sampleWithoutReplacement(shapes, 2); 
 
-        var names_sample = jsPsych.randomization.sampleWithoutReplacement(shuffled_names, 2);
-        var shapes_sample = jsPsych.randomization.sampleWithoutReplacement(shuffled_shapes, 2); 
+
+        var left = [1, 1, 2, 2, 4, 6, 7, 7, 6, 4]
+        var right = [4, 6, 7, 7, 6, 4, 2, 2, 1, 1]
+        var center = [1, 2, 4, 6, 7, 7, 6, 4, 2, 1]
+        var bins = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
+        var featureextent = 0;
+        var minsize = 0;
+        var maxsize = 0;
+        var binsize = 0
+
+        function createBins(dist) {
+            var placeindist = 0
+            for (i = 0; i < dist.length; i++) {
+                bins[i][0] = placeindist;
+                placeindist += dist[i];
+                bins[i][1] = placeindist;
+            }
+            featureextent = placeindist;
+        }
+
+        function getBin (number) {
+            for (i = 0; i < bins.length; i++) {
+                if (bins[i][0] <= number && number < bins[i][1]) {
+                    return i;
+                }
+            }
+        }
+
+        function drawFeature(isTarget) {
+            randomdraw = Math.random()*featureextent
+            bin = getBin(randomdraw)
+            if (isTarget) {
+                minsize = 250;
+                maxsize = 500;
+                binsize = (maxsize - minsize)/center.length
+            } else {
+                minsize = 100;
+                maxsize = 350;
+                binsize = (maxsize - minsize)/center.length
+            }
+            size = (bin) * binsize + minsize + (Math.random()*binsize);
+            return size;
+        }
 
         /*
         var check = {
@@ -116,19 +167,30 @@
                 {
                     type: "html-keyboard-response", 
                     stimulus: function() {
+                        /*
                         if (jsPsych.timelineVariable("name", true) == targetName) {
                             var size = shuffled_little.pop();
                         } else {
                             var size = shuffled_big.pop();
-                        }
+                        } */
+
                         /* var randNumber = Math.floor(Math.random() * 4); 
                         var size = sizes[randNumber];   */
+
+                        createBins(center);
+                        if (jsPsych.timelineVariable("name", true) == targetName) {
+                            var size = drawFeature(true);
+                        } else {
+                            var size = drawFeature(false);
+                        }
+
                         return "<audio src='stimsounds/" + jsPsych.timelineVariable("name", true) + ".mp3', autoplay='true'></audio>" + 
                         "<div class='displayed'>" + 
                         "<div style='width: 700px;'>" + 
                         "<div style='float: center;'>" + 
                         "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>" + 
                         "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
+                        + "<div id='rectangle'></div>"
                     },
                     choices: ["f", "j"],
                     /*
@@ -144,7 +206,7 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 13
+                size: 20
             }
             /* randomize_order: true, 
             repetitions: 13  */  /* because 13 size choices for toma, 13 size choices for dax */  
