@@ -252,7 +252,7 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 50
+                size: 2
             }
             /* randomize_order: true, 
             repetitions: 13  */  /* because 13 size choices for toma, 13 size choices for dax */  
@@ -275,13 +275,20 @@
                 {
                     type: "html-keyboard-response", 
                     stimulus: function() {
-                        var randNumber = Math.floor(Math.random() * 4);
-                        var size = sizes[randNumber];
-                        return "Find the " + jsPsych.timelineVariable("name", true) + ". " +  
+                        createBins(center);
+                        if (jsPsych.timelineVariable("name", true) == targetName) {
+                            var size = drawFeature(true);
+                        } else {
+                            var size = drawFeature(false);
+                        }
+
+                        return "This is " + jsPsych.timelineVariable("name", true) + ". " +  
+                        "<div class='displayed'>" + 
                         "<div style='width: 700px;'>" + 
                         "<div style='float: center;'>" + 
-                        "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div>" + 
-                            "<p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p>" + "size" + size
+                        "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>" + 
+                        "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
+                        + "<div id='rectangle'></div>"
                     },
                     choices: ["f", "j"],
                     post_trial_gap: 750
