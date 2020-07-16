@@ -298,10 +298,15 @@
                 {stimulus: targetShape, name: targetName},
                 {stimulus: distractorShape, name: distractorName}
             ],
-            randomize_order: true,
-            repetitions: 50
+            sample: {
+                type: "fixed-repetitions", 
+                size: 50
+            }
+            /*randomize_order: true,
+            repetitions: 50*/
         }
         timeline.push(testing);
+        
         /* reference below for image size adjusting */
         /* return "<img style='width:100px; height:100px;' src='"+jsPsych.timelineVariable('image', true)+"'></img>";*/
         
