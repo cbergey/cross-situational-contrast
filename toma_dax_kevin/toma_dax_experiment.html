@@ -93,18 +93,16 @@
             "<p class='block-text-wide'><b>Voluntary Participation</b> Your participation in this research is voluntary. You may discontinue participation at any time during the research activity. You may print a copy of this consent form for your records.</p>" +
 
             "<p class='block-text-wide'>I am age 18 or older." +
-            "<input type='radio' name='age' value='eighteen' onclick='enable('start')'> Yes" +
-            "<input type='radio' name='age' value='not_eighteen' onclick='disable('start')'> No</p>" +
+            "<input type='radio' name='age' value='eighteen' onclick=enable('start')> Yes" +
+            "<input type='radio' name='age' value='not_eighteen' onclick=disable('start')> No</p>" +
 
             "<p class='block-text-wide'>I have read and understand the information above." +
-            "<input type='radio' name='understand' value='understood' onclick='enable('start')'> Yes" +
-            "<input type='radio' name='understand' value='not_understood' onclick='disable('start')'> No</p>" +
+            "<input type='radio' name='understand' value='understood' onclick=enable('start')> Yes" +
+            "<input type='radio' name='understand' value='not_understood' onclick=disable('start')> No</p>" +
 
             "<p class='block-text-wide'>I want to participate in this research and continue with the game." +
-            "<input type='radio' name='give_consent' value='consent' onclick='enable('start')'> Yes" +
-            "<input type='radio' name='give_consent' value='not_consent' onclick='disable('start')'> No </p>" +
-
-            /*"<button type='button' DISABLED id='start'>Start Experiment</button>" +*/
+            "<input type='radio' name='give_consent' value='consent' onclick=enable('start')> Yes" +
+            "<input type='radio' name='give_consent' value='not_consent' onclick=disable('start')> No </p>" +
 
             "</div>", 
             button_html: "<button type='button' DISABLED id='start'>Start Experiment</button>",
@@ -133,7 +131,6 @@
         var shapes = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"];
         
         var colors = ["red", "blue", "green", "purple"];
-        /*var sizes = ["big","small"];  just use HTML to adjust size of the image */
         var sizes = [ [500], [400], [300], [200] ] ;
         var littleSizes = [150, 200, 200, 200, 250, 250, 250, 250, 250, 300, 300, 300, 350]; /* size is 13 */
         var bigSizes = [300, 350, 350, 350, 400, 400, 400, 400, 400, 450, 450, 450, 500];
@@ -143,7 +140,6 @@
 
         var names_sample = jsPsych.randomization.sampleWithoutReplacement(names, 2);
         var shapes_sample = jsPsych.randomization.sampleWithoutReplacement(shapes, 2); 
-
 
         var left = [1, 1, 2, 2, 4, 6, 7, 7, 6, 4]
         var right = [4, 6, 7, 7, 6, 4, 2, 2, 1, 1]
@@ -187,15 +183,6 @@
             size = (bin) * binsize + minsize + (Math.random()*binsize);
             return size;
         }
-
-        /*
-        var check = {
-            type: "html-keyboard-response", 
-            stimulus: shapes_sample, 
-            trial_duration: 3000
-        }
-        timeline.push(check);  
-        */
         
         var targetShape = shapes_sample[0]; /*  number */
         var targetName = names_sample[0];  /*  name */ 
@@ -203,7 +190,7 @@
         var distractorShape = shapes_sample[1];
         var distractorName = names_sample[1];
 
-        /* first i want to have the "training phase" where people just press 
+        /* first i want to have the training phase where people just press 
         F for some fruit and J for another fruit */
 
         var test_stimuli = [
@@ -265,7 +252,7 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 20
+                size: 50
             }
             /* randomize_order: true, 
             repetitions: 13  */  /* because 13 size choices for toma, 13 size choices for dax */  
@@ -305,7 +292,7 @@
                 {stimulus: distractorShape, name: distractorName}
             ],
             randomize_order: true,
-            repetitions: 2
+            repetitions: 50
         }
         timeline.push(testing);
         /* reference below for image size adjusting */
