@@ -6,9 +6,9 @@
             "<img src='img/cmu_logo.png' alt='Carnegie Mellon University'>" +
             "<p id='logo-text'><u>Online Consent Form</u></p>" +
 
-            "<p class='block-text-wide'>This game is part of a research study conducted by Daniel Yurovsky at Carnegie Mellon University. </p>" +
+            "<small><p class='block-text-wide'>This game is part of a research study conducted by Daniel Yurovsky at Carnegie Mellon University. </p>" +
 
-            "<p class='block-text-wide'><b>Summary</b>  In this game, you be presented a series of inoffensive stimuli designed to measure how people learn and communicate. You will be asked to make responses via mouse and keyboard. There are no foreseeable risks to you in this study, and participation will take no more than 20 minutes. Being in this study is voluntary – it is your choice.</p>" +
+            "<p class='block-text-wide'><b>Summary</b>  In this game, you be presented a series of inoffensive stimuli designed to measure how people learn and communicate. You will be asked to make responses via mouse and keyboard. There are no foreseeable risks to you in this study, and participation will take no more than 20 minutes. Being in this study is voluntary - it is your choice.</p>" +
 
             "<p class='block-text-wide'><b>Purpose</b> In this study, we are investigating the development of language and communication.  Our research explores how infants and young children learn new words so quickly from the language spoken around them, as well as how adults learn language.  We are also interested in how adults foster this rapid vocabulary growth.</p>" +
 
@@ -47,7 +47,7 @@
             "<input type='radio' name='give_consent' value='consent' onclick=enable('start')> Yes" +
             "<input type='radio' name='give_consent' value='not_consent' onclick=disable('start')> No </p>" +
 
-            "</div>", 
+            "</small></div>", 
             button_html: "<button type='button' DISABLED id='start'>Start Experiment</button>",
             choices: ["Start Experiment"]
         }
