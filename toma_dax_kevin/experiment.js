@@ -177,9 +177,9 @@
                         "<div class='displayed'>" + 
                         "<div style='width: 700px;'>" + 
                         "<div style='float: center;'>" + 
+                        "<div id='rectangle'></div>" +
                         "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>" + 
                         "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
-                        + "<div id='rectangle'></div>"
                     },
                     choices: ["f", "j"],
                     /*
