@@ -86,8 +86,10 @@
 
         var left = [1, 1, 2, 2, 4, 6, 7, 7, 6, 4]
         var right = [4, 6, 7, 7, 6, 4, 2, 2, 1, 1]
-        var center = [1, 2, 4, 6, 7, 7, 6, 4, 2, 1]
-        var bins = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
+        //var center = [1, 2, 4, 6, 7, 7, 6, 4, 2, 1]
+        var center = [1, 4, 6, 4, 1]
+        //var bins = [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]] 
+        var bins = [[0,0],[0,0],[0,0],[0,0],[0,0]]
         var featureextent = 0;
         var minsize = 0;
         var maxsize = 0;
@@ -115,12 +117,12 @@
             randomdraw = Math.random()*featureextent
             bin = getBin(randomdraw)
             if (isTarget) {
-                minsize = 250;
-                maxsize = 500;
+                minsize = 260;
+                maxsize = 460;
                 binsize = (maxsize - minsize)/center.length
             } else {
                 minsize = 100;
-                maxsize = 350;
+                maxsize = 300;
                 binsize = (maxsize - minsize)/center.length
             }
             size = (bin) * binsize + minsize + (Math.random()*binsize);
