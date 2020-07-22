@@ -53,13 +53,6 @@
         }
         timeline.push(consent_form);
 
-        /* var consent = {
-            type: "external-html",
-            url: "consent/consent.html",
-            cont_btn: "start"
-        };
-        timeline.push(consent); */
-
         var audio_instructions = {
             type: 'image-button-response', 
             stimulus: "img/speaker.png",
@@ -128,6 +121,19 @@
             size = (bin) * binsize + minsize + (Math.random()*binsize);
             return size;
         }
+
+        function drawUniform(isTarget) {
+            if (isTarget) {
+                minsize = 260;
+                maxsize = 460;
+            } else {
+                minsize = 100;
+                maxsize = 300;
+            }
+            randomdraw = Math.random()*(maxsize - minsize)
+            size = randomdraw + minsize;
+            return size;
+        }
         
         var targetShape = shapes_sample[0]; /*  number */
         var targetName = names_sample[0];  /*  name */ 
@@ -189,6 +195,28 @@
                     trial_duration: 3000,
                     */
                     post_trial_gap: 750
+                }, 
+                {
+                    type: 'audio-keyboard-response',
+                    stimulus: function(){
+                        var key = jsPsych.data.get().last(1).values()[0].key_press;
+                        var correct = jsPsych.data.get().last(1).values()[0].correct;
+                        if(key == "70" && correct == true){
+                            return 'stimsounds/empty.wav'
+                        } 
+                        if (key == "70" && correct == false) {
+                            return 'stimsounds/buzzer.wav'
+                        }
+                        if(key == "74" && correct == true){
+                            return 'stimsounds/empty.wav'
+                        } 
+                        if (key == "74" && correct == false) {
+                            return 'stimsounds/buzzer.wav'
+                        }
+                    }, 
+                    choices: jsPsych.NO_KEYS,
+                    trial_duration: 1250
+                    //trial_ends_after_audio: true
                 }
             ],
             timeline_variables:  [
@@ -209,14 +237,12 @@
                         data.correct = true;
                     } else {
                         data.correct = false;
-                        //return "<audio src='stimsounds/buzzer.wav', autoplay='true'></audio>"
-                    }
+                    }   
                 }  else {
                     if (data.key_press == 74) {
                         data.correct = true;
                     } else {
                         data.correct = false;
-                        //return "<audio src='stimsounds/buzzer.wav', autoplay='true'></audio>"
                     }
                 }
             }
@@ -243,9 +269,9 @@
                     stimulus: function() {
                         createBins(center);
                         if (jsPsych.timelineVariable("name", true) == targetName) {
-                            var size = drawFeature(true);
+                            var size = drawUniform(true);
                         } else {
-                            var size = drawFeature(false);
+                            var size = drawUniform(false);
                         }
 
                         return "This is " + jsPsych.timelineVariable("name", true) + ". " +  
@@ -266,7 +292,7 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 4
+                size: 2
             }, 
             data: {
                 shape: jsPsych.timelineVariable("stimulus"),
@@ -302,12 +328,17 @@
         "stim-images/object" + shapes_sample[1] + "bluebig.jpg",
         "stim-images/object" + shapes_sample[0] + "bluebig.jpg"]; */
 
+        var audio = ['stimsounds/buzzer.wav', 'stimsounds/empty.wav']
+
         jsPsych.init({
             timeline: timeline,
             show_progress_bar: true,
+            preload_audio: audio,
+            use_webaudio: false,
             on_finish: function() {
                 jsPsych.data.displayData();
             }
+            
             /*preload_images: images
             default_iti: 500*/
         });
