@@ -198,9 +198,30 @@
             sample: {
                 type: "fixed-repetitions", 
                 size: 2
+            }, 
+            data: {
+                shape: jsPsych.timelineVariable("stimulus"),
+                name: jsPsych.timelineVariable("name")
+            }, 
+            on_finish: function(data) {
+                if (jsPsych.timelineVariable("name", true) == targetName) {
+                    if (data.key_press == 70) {
+                        data.correct = true;
+                    } else {
+                        data.correct = false;
+                        //return "<audio src='stimsounds/buzzer.wav', autoplay='true'></audio>"
+                    }
+                }  else {
+                    if (data.key_press == 74) {
+                        data.correct = true;
+                    } else {
+                        data.correct = false;
+                        //return "<audio src='stimsounds/buzzer.wav', autoplay='true'></audio>"
+                    }
+                }
             }
             /* randomize_order: true, 
-            repetitions: 13  */  /* because 13 size choices for toma, 13 size choices for dax */  
+            repetitions: 13  */
         }
         timeline.push(procedure);
 
@@ -245,7 +266,26 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 50
+                size: 4
+            }, 
+            data: {
+                shape: jsPsych.timelineVariable("stimulus"),
+                name: jsPsych.timelineVariable("name")
+            }, 
+            on_finish: function(data) {
+                if (jsPsych.timelineVariable("name", true) == targetName) {
+                    if (data.key_press == 70) {
+                        data.correct = true;
+                    } else {
+                        data.correct = false;
+                    }
+                }  else {
+                    if (data.key_press == 74) {
+                        data.correct = true;
+                    } else {
+                        data.correct = false;
+                    }
+                }
             }
             /*randomize_order: true,
             repetitions: 50*/
@@ -264,6 +304,7 @@
 
         jsPsych.init({
             timeline: timeline,
+            show_progress_bar: true,
             on_finish: function() {
                 jsPsych.data.displayData();
             }
