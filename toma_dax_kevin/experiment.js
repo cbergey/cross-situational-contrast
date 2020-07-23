@@ -1,5 +1,8 @@
         var timeline = [];
 
+        var progress_bar = 0;
+        var tick_amount = 0;
+
         var consent_form = {
             type: 'html-button-response',
             stimulus: "<div id='consent'>" +
@@ -49,7 +52,12 @@
 
             "</small></div>", 
             button_html: "<button type='button' DISABLED id='start'>Start Experiment</button>",
-            choices: ["Start Experiment"]
+            choices: ["Start Experiment"], 
+            on_finish: function() {
+                tick_amount = 0.15;
+                progress_bar += tick_amount
+                jsPsych.setProgressBar(progress_bar);
+            }
         }
         timeline.push(consent_form);
 
@@ -59,7 +67,12 @@
             stimulus_height: 375,
             stimulus_width: 375, 
             prompt: "Make sure your audio is on. Press the button above to begin.",
-            choices: ['Start']
+            choices: ['Start'], 
+            on_finish: function() {
+                tick_amount = 0.15;
+                progress_bar += tick_amount
+                jsPsych.setProgressBar(progress_bar);
+            }
         }
         timeline.push(audio_instructions);
         
@@ -122,6 +135,9 @@
             return size;
         }
 
+        uniformTarget = [2, 2, 2, 2, 2];
+        uniformDistract = [2, 2, 2, 2, 2];
+
         function drawUniform(isTarget) {
             if (isTarget) {
                 minsize = 260;
@@ -130,8 +146,27 @@
                 minsize = 100;
                 maxsize = 300;
             }
-            randomdraw = Math.random()*(maxsize - minsize)
-            size = randomdraw + minsize;
+            binsize = (maxsize - minsize)/center.length
+
+            // maybe it's caught up in an infinite loop?
+            found = false;
+            while (found == false) {
+                randomdraw = Math.random()*(maxsize - minsize)
+                size = randomdraw + minsize;
+                for (i = 1; i <= 5; i++) {
+                    if (isTarget) {
+                        if (size >= minsize + binsize*(i-1) && size <= minsize + binsize*i && uniformTarget[i-1] > 0) {
+                            uniformTarget[i-1] -= 1;
+                            found = true
+                        } 
+                    } else {
+                        if (size >= minsize + binsize*(i-1) && size <= minsize + binsize*i && uniformDistract[i-1] > 0) {
+                            uniformDistract[i-1] -= 1;
+                            found = true
+                        } 
+                    }
+                }
+            }
             return size;
         }
         
@@ -245,6 +280,9 @@
                         data.correct = false;
                     }
                 }
+                tick_amount = 0.03
+                progress_bar += tick_amount
+                jsPsych.setProgressBar(progress_bar);
             }
             /* randomize_order: true, 
             repetitions: 13  */
@@ -258,7 +296,12 @@
                     stimulus: "We will now begin the testing phase. <p>Press F for " + targetName + ". Press J for " + distractorName + ".</p> <p>Press Space to begin.</p>",
                     choices: ["space"]
                 }
-            ]
+            ], 
+            on_finish: function() {
+                tick_amount = 0.1
+                progress_bar += tick_amount
+                jsPsych.setProgressBar(progress_bar);
+            }
         }
         timeline.push(breakTime);
 
@@ -292,7 +335,7 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 2
+                size: 10
             }, 
             data: {
                 shape: jsPsych.timelineVariable("stimulus"),
@@ -312,6 +355,9 @@
                         data.correct = false;
                     }
                 }
+                tick_amount = 0.03
+                progress_bar += tick_amount
+                jsPsych.setProgressBar(progress_bar);
             }
             /*randomize_order: true,
             repetitions: 50*/
@@ -333,10 +379,12 @@
         jsPsych.init({
             timeline: timeline,
             show_progress_bar: true,
+            auto_update_progress_bar: false,
             preload_audio: audio,
             use_webaudio: false,
             on_finish: function() {
                 jsPsych.data.displayData();
+                jsPsych.setProgressBar(1);
             }
             
             /*preload_images: images
