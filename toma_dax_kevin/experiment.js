@@ -386,18 +386,23 @@
 
         var audio = ['stimsounds/buzzer.wav', 'stimsounds/empty.wav']
 
-        jsPsych.init({
-            timeline: timeline,
-            show_progress_bar: true,
-            auto_update_progress_bar: false,
-            preload_audio: audio,
-            use_webaudio: false,
-            on_finish: function() {
-                jsPsych.data.displayData();
-                jsPsych.setProgressBar(1);
-            }
-            
-            /*preload_images: images
-            default_iti: 500*/
-        });
+        jsPsych.pluginAPI.preloadAudioFiles(audio, function(){ startExperiment(); });
+
+        function startExperiment() {
+            jsPsych.init({
+                timeline: timeline,
+                show_progress_bar: true,
+                auto_update_progress_bar: false,
+                preload_audio: audio,
+                use_webaudio: false,
+                on_finish: function() {
+                    jsPsych.data.displayData();
+                    jsPsych.setProgressBar(1);
+                }
+                
+                /*preload_images: images
+                default_iti: 500*/
+            });
+        }
+        
     
