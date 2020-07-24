@@ -240,7 +240,7 @@
                     response_ends_trial: false,
                     trial_duration: 3000,
                     */
-                    post_trial_gap: 750
+                    post_trial_gap: 250
                 }, 
                 {
                     type: 'audio-keyboard-response',
