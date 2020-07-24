@@ -54,7 +54,7 @@
             button_html: "<button type='button' DISABLED id='start'>Start Experiment</button>",
             choices: ["Start Experiment"], 
             on_finish: function() {
-                tick_amount = 0.15;
+                tick_amount = 0.075;
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
             }
@@ -66,10 +66,10 @@
             stimulus: "img/speaker.png",
             stimulus_height: 375,
             stimulus_width: 375, 
-            prompt: "Make sure your audio is on. Press the button above to begin.",
-            choices: ['Start'], 
+            prompt: "Make sure your audio is on. Press the button above to continue.",
+            choices: ['Next'], 
             on_finish: function() {
-                tick_amount = 0.1;
+                tick_amount = 0.075;
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
             }
@@ -148,7 +148,6 @@
             }
             binsize = (maxsize - minsize)/center.length
 
-            // maybe it's caught up in an infinite loop?
             found = false;
             while (found == false) {
                 randomdraw = Math.random()*(maxsize - minsize)
@@ -187,6 +186,24 @@
         /* for later, if i want to separate the actual trial from the procedure
         var trial = {}
         */
+
+       var main_instructions = {
+            type: 'html-keyboard-response', 
+            stimulus: "<b>Instructions</b>"
+            + "<p>You will see images of two categories of alien fruits, named " + targetName + " and " + distractorName + " .</p> " 
+            + "<p>They will come out in random order, one at a time.</p>"
+            + "<p>For one category, press the \"F\" key, and for the other category, press the \"J\" key. </p>"
+            + "<p>You won't know which key corresponds to which fruit at first, but make your best guesses and over time, you will learn.</p>"
+            + "<p>Remember, you will use the \"F\" and \"J\" keys to categorize the fruits.</p>"
+            + "<p>Press the space bar to begin.</p>", 
+            choices: ["space"],
+            on_finish: function() {
+                tick_amount = 0.075;
+                progress_bar += tick_amount
+                jsPsych.setProgressBar(progress_bar);
+            }
+        }
+        timeline.push(main_instructions);
 
         var procedure = {
             timeline: [
