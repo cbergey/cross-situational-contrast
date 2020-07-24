@@ -177,11 +177,6 @@
 
         /* first i want to have the training phase where people just press 
         F for some fruit and J for another fruit */
-
-        var test_stimuli = [
-            {stimulus: targetShape, name: targetName},
-            {stimulus: distractorShape, name: distractorName}
-        ];   /* not using */ 
         
         /* for later, if i want to separate the actual trial from the procedure
         var trial = {}
@@ -198,7 +193,7 @@
             + "<p>Press the space bar to begin.</p>", 
             choices: ["space"],
             on_finish: function() {
-                tick_amount = 0.075;
+                tick_amount = 0.05;
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
             }
@@ -216,10 +211,6 @@
                         } else {
                             var size = shuffled_big.pop();
                         } */
-
-                        /* var randNumber = Math.floor(Math.random() * 4); 
-                        var size = sizes[randNumber];   */
-
                         createBins(center);
                         if (jsPsych.timelineVariable("name", true) == targetName) {
                             var size = drawFeature(true);
@@ -293,7 +284,7 @@
                         data.correct = false;
                     }
                 }
-                tick_amount = 0.01
+                tick_amount = 0.0075
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
             }
@@ -337,8 +328,15 @@
                         // + "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                         + "<div id='rectangle'></div>"
                     },
-                    choices: ["f", "j"],
-                    post_trial_gap: 750
+                    choices: ["f", "j"]
+                    //post_trial_gap: 750
+                }, {
+                    type: "html-keyboard-response", 
+                    stimulus: function() {
+                        return "<div id='rectangle'></div>"
+                    }, 
+                    choices: jsPsych.NO_KEYS, 
+                    trial_duration: 1000
                 }
             ],
             timeline_variables:  [
@@ -367,7 +365,7 @@
                         data.correct = false;
                     }
                 }
-                tick_amount = 0.01
+                tick_amount = 0.0075
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
             }
