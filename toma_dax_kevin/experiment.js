@@ -235,30 +235,32 @@
                         "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>"
                         //+ "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                     },
-                    choices: ["f", "j"],  // target is F, distractor is J
+                    choices: ["f", "j"]  // target is F, distractor is J
                     /*
                     response_ends_trial: false,
                     trial_duration: 3000,
                     */
-                    post_trial_gap: 250
+                    //post_trial_gap: 250
                 }, 
                 {
-                    type: 'audio-keyboard-response',
+                    type: 'html-keyboard-response',
                     stimulus: function(){
                         var key = jsPsych.data.get().last(1).values()[0].key_press;
                         var correct = jsPsych.data.get().last(1).values()[0].correct;
                         if(key == "70" && correct == true){
-                            return 'stimsounds/empty.wav'
+                            aud = 'empty'
                         } 
                         if (key == "70" && correct == false) {
-                            return 'stimsounds/buzzer.wav'
+                            aud = 'buzzer'
                         }
                         if(key == "74" && correct == true){
-                            return 'stimsounds/empty.wav'
+                            aud = 'empty'
                         } 
                         if (key == "74" && correct == false) {
-                            return 'stimsounds/buzzer.wav'
+                            aud = 'buzzer'
                         }
+                        return "<audio src='stimsounds/" + aud + ".wav', autoplay='true'></audio>" 
+                        + "<div id='rectangle'></div>"
                     }, 
                     choices: jsPsych.NO_KEYS,
                     trial_duration: 1250
@@ -373,6 +375,17 @@
             repetitions: 50*/
         }
         timeline.push(testing);
+
+        var debrief = {
+            type: "html-keyboard-response",
+            stimulus: "Thanks for completing this experiment! "
+            + "Press space to finish.",  
+            choices: ["space"],  // later do jspsych.NO_KEYS  ?
+            on_start: function() {
+                jsPsych.setProgressBar(1);
+            }
+        }
+        timeline.push(debrief);
         
         /* reference below for image size adjusting */
         /* return "<img style='width:100px; height:100px;' src='"+jsPsych.timelineVariable('image', true)+"'></img>";*/
@@ -395,9 +408,8 @@
                 auto_update_progress_bar: false,
                 preload_audio: audio,
                 use_webaudio: false,
-                on_finish: function() {
+                on_finish: function() {  // comment this out later
                     jsPsych.data.displayData();
-                    jsPsych.setProgressBar(1);
                 }
                 
                 /*preload_images: images
