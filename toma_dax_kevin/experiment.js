@@ -284,6 +284,7 @@
                         data.correct = false;
                     }
                 }
+                data.objSize = size;
                 tick_amount = 0.0075
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
@@ -325,7 +326,7 @@
                         "<div style='width: 700px;'>" + 
                         "<div style='float: center;'>" + 
                         "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>"
-                        // + "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
+                         + "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                         + "<div id='rectangle'></div>"
                     },
                     choices: ["f", "j"]
@@ -365,6 +366,7 @@
                         data.correct = false;
                     }
                 }
+                data.objSize = size;
                 tick_amount = 0.0075
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
