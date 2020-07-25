@@ -326,7 +326,7 @@
                         "<div style='width: 700px;'>" + 
                         "<div style='float: center;'>" + 
                         "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>"
-                         + "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
+                        // + "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                         + "<div id='rectangle'></div>"
                     },
                     choices: ["f", "j"]
@@ -378,8 +378,11 @@
 
         var debrief = {
             type: "html-keyboard-response",
-            stimulus: "Thanks for completing this experiment! "
-            + "Press space to finish.",  
+            stimulus: "<b>Thank you for completing this experiment!</b>"
+            + "<p></p><p class='block-text-debrief'>This experiment is a replication of previous work on category learning from direct experience showing that people categorize typical members of a category more quickly than atypical ones."
+            + " In this case, we are looking to see if participants are faster to categorize alien fruits that are more typical of their categories (closer to the center of the size distribution of the category)."
+            + " That is, participants will categorize big " + targetName + "s and small " + distractorName + "s more quickly than small " + targetName + "s and big " + distractorName + "s.</p>"
+            + "<p>Press space to finish.</p>",  
             choices: ["space"],  // later do jspsych.NO_KEYS  ?
             on_start: function() {
                 jsPsych.setProgressBar(1);
