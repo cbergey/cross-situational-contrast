@@ -284,12 +284,14 @@
             }, 
             on_finish: function(data) {
                 if (jsPsych.timelineVariable("name", true) == targetName) {
+                    data.object = 'big'
                     if (data.key_press == 70) {
                         data.correct = true;
                     } else {
                         data.correct = false;
                     }   
                 }  else {
+                    data.object = 'small'
                     if (data.key_press == 74) {
                         data.correct = true;
                     } else {
@@ -369,12 +371,14 @@
             }, 
             on_finish: function(data) {
                 if (jsPsych.timelineVariable("name", true) == targetName) {
+                    data.object = 'big'
                     if (data.key_press == 70) {
                         data.correct = true;
                     } else {
                         data.correct = false;
                     }
                 }  else {
+                    data.object = 'small'
                     if (data.key_press == 74) {
                         data.correct = true;
                     } else {
