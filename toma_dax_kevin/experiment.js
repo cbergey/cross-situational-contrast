@@ -13,6 +13,13 @@
 
         //timeline.push(recaptcha);
 
+        var fake_recaptcha = {
+            type: "html-keyboard-response", 
+            stimulus: "Press the keyboard key of the letter that comes after the letter d in the alphabet.",
+            choices: ["e"]
+        }
+        timeline.push(fake_recaptcha);
+
         function uniqueTurker(){
             var ut_id = "05bb1462ff63e3331f8b2c14e9bfe303";
             if (UTWorkerLimitReached(ut_id)) {
@@ -285,7 +292,7 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 10
+                size: 15
             }, 
             data: {
                 shape: jsPsych.timelineVariable("stimulus"),
@@ -309,7 +316,7 @@
                 }
                 data.phase = 'training';
                 data.objSize = size;
-                tick_amount = 0.0075
+                tick_amount = 0.005
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
             }
