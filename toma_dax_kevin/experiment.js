@@ -3,23 +3,6 @@
         var progress_bar = 0;
         var tick_amount = 0;
 
-        // // reCAPTCHA object
-        // var recaptcha = {
-        //     type: "external-html",
-        //     url: "recaptcha.html",
-        //     cont_btn: "submit_button",
-        //     execute_script: true
-        // };
-
-        //timeline.push(recaptcha);
-
-        var fake_recaptcha = {
-            type: "html-keyboard-response", 
-            stimulus: "Press the keyboard key of the letter that comes after the letter d in the alphabet.",
-            choices: ["e"]
-        }
-        timeline.push(fake_recaptcha);
-
         function uniqueTurker(){
             var ut_id = "05bb1462ff63e3331f8b2c14e9bfe303";
             if (UTWorkerLimitReached(ut_id)) {
@@ -86,6 +69,13 @@
             }
         }
         timeline.push(consent_form);
+
+        var fake_recaptcha = {
+            type: "html-keyboard-response", 
+            stimulus: "Press the keyboard key of the letter that comes after the letter d in the alphabet.",
+            choices: ["e"]
+        }
+        timeline.push(fake_recaptcha);
 
         var audio_instructions = {
             type: 'image-button-response', 
@@ -231,13 +221,9 @@
                 {
                     type: "html-keyboard-response", 
                     stimulus: function() {
-                        /*
-                        if (jsPsych.timelineVariable("name", true) == targetName) {
-                            var size = shuffled_little.pop();
-                        } else {
-                            var size = shuffled_big.pop();
-                        } */
+                        
                         createBins(center);
+
                         if (jsPsych.timelineVariable("name", true) == targetName) {
                             var size = drawFeature(true);
                         } else {
@@ -252,7 +238,7 @@
                         "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>"
                         //+ "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                     },
-                    choices: ["f", "j"],// target is F, distractor is J
+                    choices: ["f", "j"],  // target is F, distractor is J
                     data: {trial_name: 'trial'} 
                     /*
                     response_ends_trial: false,
@@ -320,8 +306,6 @@
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
             }
-            /* randomize_order: true, 
-            repetitions: 13  */
         }
         timeline.push(procedure);
 
@@ -407,8 +391,6 @@
                 progress_bar += tick_amount
                 jsPsych.setProgressBar(progress_bar);
             }
-            /*randomize_order: true,
-            repetitions: 50*/
         }
         timeline.push(testing);
 
@@ -447,9 +429,12 @@
                 auto_update_progress_bar: false,
                 preload_audio: audio,
                 use_webaudio: false,
-                on_finish: function() {  // comment this out later
-                    //jsPsych.data.displayData();
-                    turk.submit(jsPsych.data.get().csv());
+                on_finish: function() {  
+                    // jsPsych.data.displayData();
+                    // turk.submit(jsPsych.data.get().csv());
+                    jsPsych.turk.submitToTurk({
+                        code: 55
+                    });
                 }
                 
                 /*preload_images: images
