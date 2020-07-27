@@ -37,11 +37,11 @@
 
             "<small><p class='block-text-wide'>This game is part of a research study conducted by Daniel Yurovsky at Carnegie Mellon University. </p>" +
 
-            "<p class='block-text-wide'><b>Summary</b>  In this game, you be presented a series of inoffensive stimuli designed to measure how people learn and communicate. You will be asked to make responses via mouse and keyboard. There are no foreseeable risks to you in this study, and participation will take no more than 20 minutes. Being in this study is voluntary - it is your choice.</p>" +
+            "<p class='block-text-wide'><b>Summary</b>  In this game, you be presented a series of inoffensive stimuli designed to measure how people learn and communicate. You will be asked to make responses via mouse and keyboard. There are no foreseeable risks to you in this study, and participation will take no more than 10 minutes. Being in this study is voluntary - it is your choice.</p>" +
 
             "<p class='block-text-wide'><b>Purpose</b> In this study, we are investigating the development of language and communication.  Our research explores how infants and young children learn new words so quickly from the language spoken around them, as well as how adults learn language.  We are also interested in how adults foster this rapid vocabulary growth.</p>" +
 
-            "<p class='block-text-wide'><b>Procedures</b> We will present you with a variety of stimuli, including natural and artificial language samples, pictures of known or unknown objects, and/or movies of people talking. Sometimes some of the speech you will hear will be from a foreign or made-up language. You will be asked to make judgments about these stimuli using the mouse and keyboard. This study will take at most 20 minutes and can completed online in your browser.</p>" +
+            "<p class='block-text-wide'><b>Procedures</b> We will present you with a variety of stimuli, including natural and artificial language samples, pictures of known or unknown objects, and/or movies of people talking. Sometimes some of the speech you will hear will be from a foreign or made-up language. You will be asked to make judgments about these stimuli using the mouse and keyboard. We expect that this study will take around 5 minutes and can completed online in your browser.</p>" +
 
             "<p class='block-text-wide'><b>Participant Requirements</b> Participation in this study is limited to individuals age 18 and older who are fluent speakers of English.</p>" +
 
