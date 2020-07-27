@@ -11,7 +11,7 @@
         //     execute_script: true
         // };
 
-        timeline.push(recaptcha);
+        //timeline.push(recaptcha);
 
         var consent_form = {
             type: 'html-button-response',
@@ -236,7 +236,8 @@
                         "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>"
                         //+ "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                     },
-                    choices: ["f", "j"]  // target is F, distractor is J
+                    choices: ["f", "j"],// target is F, distractor is J
+                    data: {trial_name: 'trial'} 
                     /*
                     response_ends_trial: false,
                     trial_duration: 3000,
@@ -264,7 +265,8 @@
                         + "<div id='rectangle'></div>"
                     }, 
                     choices: jsPsych.NO_KEYS,
-                    trial_duration: 1250
+                    trial_duration: 1250, 
+                    data: {trial_name: 'feedback'}
                     //trial_ends_after_audio: true
                 }
             ],
@@ -294,6 +296,7 @@
                         data.correct = false;
                     }
                 }
+                data.phase = 'training';
                 data.objSize = size;
                 tick_amount = 0.0075
                 progress_bar += tick_amount
@@ -339,7 +342,8 @@
                         // + "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                         + "<div id='rectangle'></div>"
                     },
-                    choices: ["f", "j"]
+                    choices: ["f", "j"], 
+                    data: {trial_name: 'trial'}
                     //post_trial_gap: 750
                 }, {
                     type: "html-keyboard-response", 
@@ -347,7 +351,8 @@
                         return "<div id='rectangle'></div>"
                     }, 
                     choices: jsPsych.NO_KEYS, 
-                    trial_duration: 1000
+                    trial_duration: 1000,
+                    data: {trial_name: 'feedback'}
                 }
             ],
             timeline_variables:  [
@@ -376,6 +381,7 @@
                         data.correct = false;
                     }
                 }
+                data.phase = 'testing';
                 data.objSize = size;
                 tick_amount = 0.0075
                 progress_bar += tick_amount
