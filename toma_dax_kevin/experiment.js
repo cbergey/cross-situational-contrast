@@ -3,6 +3,16 @@
         var progress_bar = 0;
         var tick_amount = 0;
 
+        // reCAPTCHA object
+        var recaptcha = {
+            type: "external-html",
+            url: "recaptcha.html",
+            cont_btn: "submit_button",
+            execute_script: true
+        };
+
+        timeline.push(recaptcha);
+
         var consent_form = {
             type: 'html-button-response',
             stimulus: "<div id='consent'>" +
