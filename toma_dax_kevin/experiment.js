@@ -13,6 +13,15 @@
 
         //timeline.push(recaptcha);
 
+        function uniqueTurker(){
+            var ut_id = "05bb1462ff63e3331f8b2c14e9bfe303";
+            if (UTWorkerLimitReached(ut_id)) {
+                document.getElementById('mturk_form').style.display = 'none';
+                document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
+            }
+        };
+        uniqueTurker();
+
         var consent_form = {
             type: 'html-button-response',
             stimulus: "<div id='consent'>" +
@@ -397,13 +406,13 @@
         timeline.push(testing);
 
         var debrief = {
-            type: "html-keyboard-response",
+            type: "html-button-response",
             stimulus: "<b>Thank you for completing this experiment!</b>"
             + "<p></p><p class='block-text-debrief'>This experiment is a replication of previous work on category learning from direct experience showing that people categorize typical members of a category more quickly than atypical ones."
             + " In this case, we are looking to see if participants are faster to categorize alien fruits that are more typical of their categories (closer to the center of the size distribution of the category)."
             + " That is, participants will categorize big " + targetName + "s and small " + distractorName + "s more quickly than small " + targetName + "s and big " + distractorName + "s.</p>"
-            + "<p>Press space to finish.</p>",  
-            choices: ["space"],  // later do jspsych.NO_KEYS  ?
+            + "<p>Thank you for your participation!</p>",  
+            choices: ["Finish"],  // later do jspsych.NO_KEYS  ?
             on_start: function() {
                 jsPsych.setProgressBar(1);
             }
@@ -432,7 +441,8 @@
                 preload_audio: audio,
                 use_webaudio: false,
                 on_finish: function() {  // comment this out later
-                    jsPsych.data.displayData();
+                    //jsPsych.data.displayData();
+                    turk.submit(jsPsych.data.get().csv());
                 }
                 
                 /*preload_images: images

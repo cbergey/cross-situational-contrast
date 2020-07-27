@@ -15,6 +15,17 @@
         <link href="jspsych-6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"></link>
         <link rel="stylesheet" type="text/css" href="styles.css"></link>
         <link rel="stylesheet" type="text/css" href="consent.css"></link>
+        <script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            (function(){
+                var ut_id = "05bb1462ff63e3331f8b2c14e9bfe303";
+                if (UTWorkerLimitReached(ut_id)) {
+                    document.getElementById('mturk_form').style.display = 'none';
+                    document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
+                }
+            })();
+        </script>
+
         
         <style>
             
