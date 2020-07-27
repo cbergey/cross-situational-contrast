@@ -3,13 +3,13 @@
         var progress_bar = 0;
         var tick_amount = 0;
 
-        // reCAPTCHA object
-        var recaptcha = {
-            type: "external-html",
-            url: "recaptcha.html",
-            cont_btn: "submit_button",
-            execute_script: true
-        };
+        // // reCAPTCHA object
+        // var recaptcha = {
+        //     type: "external-html",
+        //     url: "recaptcha.html",
+        //     cont_btn: "submit_button",
+        //     execute_script: true
+        // };
 
         timeline.push(recaptcha);
 
