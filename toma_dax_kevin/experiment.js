@@ -3,31 +3,11 @@
         var progress_bar = 0;
         var tick_amount = 0;
 
-        // // reCAPTCHA object
-        // var recaptcha = {
-        //     type: "external-html",
-        //     url: "recaptcha.html",
-        //     cont_btn: "submit_button",
-        //     execute_script: true
-        // };
+        /* get info from turk */
+        var turkInfo = jsPsych.turk.turkInfo();
 
-        //timeline.push(recaptcha);
-
-        var fake_recaptcha = {
-            type: "html-keyboard-response", 
-            stimulus: "Press the keyboard key of the letter that comes after the letter d in the alphabet.",
-            choices: ["e"]
-        }
-        timeline.push(fake_recaptcha);
-
-        function uniqueTurker(){
-            var ut_id = "05bb1462ff63e3331f8b2c14e9bfe303";
-            if (UTWorkerLimitReached(ut_id)) {
-                document.getElementById('mturk_form').style.display = 'none';
-                document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
-            }
-        };
-        uniqueTurker();
+        // anonymizer for worker IDs
+        var a = new DataAnonymizer();
 
         var consent_form = {
             type: 'html-button-response',
@@ -86,6 +66,13 @@
             }
         }
         timeline.push(consent_form);
+
+        var fake_recaptcha = {
+            type: "html-keyboard-response", 
+            stimulus: "Press the keyboard key of the letter that comes after the letter d in the alphabet.",
+            choices: ["e"]
+        }
+        timeline.push(fake_recaptcha);
 
         var audio_instructions = {
             type: 'image-button-response', 
@@ -208,7 +195,7 @@
         var trial = {}
         */
 
-       var main_instructions = {
+        var main_instructions = {
             type: 'html-keyboard-response', 
             stimulus: "<b>Instructions</b>"
             + "<p>You will see images of two categories of alien fruits, named " + targetName + " and " + distractorName + " .</p> " 
@@ -228,9 +215,9 @@
 
         var procedure = {
             timeline: [
-                {
-                    type: "html-keyboard-response", 
-                    stimulus: function() {
+            {
+                type: "html-keyboard-response", 
+                stimulus: function() {
                         /*
                         if (jsPsych.timelineVariable("name", true) == targetName) {
                             var size = shuffled_little.pop();
@@ -285,41 +272,41 @@
                     data: {trial_name: 'feedback'}
                     //trial_ends_after_audio: true
                 }
-            ],
-            timeline_variables:  [
+                ],
+                timeline_variables:  [
                 {stimulus: targetShape, name: targetName},
                 {stimulus: distractorShape, name: distractorName}
-            ],
-            sample: {
-                type: "fixed-repetitions", 
-                size: 15
-            }, 
-            data: {
-                shape: jsPsych.timelineVariable("stimulus"),
-                name: jsPsych.timelineVariable("name")
-            }, 
-            on_finish: function(data) {
-                if (jsPsych.timelineVariable("name", true) == targetName) {
-                    data.object = 'big'
-                    if (data.key_press == 70) {
-                        data.correct = true;
-                    } else {
-                        data.correct = false;
-                    }   
-                }  else {
-                    data.object = 'small'
-                    if (data.key_press == 74) {
-                        data.correct = true;
-                    } else {
-                        data.correct = false;
+                ],
+                sample: {
+                    type: "fixed-repetitions", 
+                    size: 1
+                }, 
+                data: {
+                    shape: jsPsych.timelineVariable("stimulus"),
+                    name: jsPsych.timelineVariable("name")
+                }, 
+                on_finish: function(data) {
+                    if (jsPsych.timelineVariable("name", true) == targetName) {
+                        data.object = 'big'
+                        if (data.key_press == 70) {
+                            data.correct = true;
+                        } else {
+                            data.correct = false;
+                        }   
+                    }  else {
+                        data.object = 'small'
+                        if (data.key_press == 74) {
+                            data.correct = true;
+                        } else {
+                            data.correct = false;
+                        }
                     }
+                    data.phase = 'training';
+                    data.objSize = size;
+                    tick_amount = 0.005
+                    progress_bar += tick_amount
+                    jsPsych.setProgressBar(progress_bar);
                 }
-                data.phase = 'training';
-                data.objSize = size;
-                tick_amount = 0.005
-                progress_bar += tick_amount
-                jsPsych.setProgressBar(progress_bar);
-            }
             /* randomize_order: true, 
             repetitions: 13  */
         }
@@ -327,11 +314,11 @@
 
         var breakTime = {
             timeline: [
-                {
-                    type: "html-keyboard-response", 
-                    stimulus: "We will now begin the testing phase. <p>Press F for " + targetName + ". Press J for " + distractorName + ".</p> <p>Press Space to begin.</p>",
-                    choices: ["space"]
-                }
+            {
+                type: "html-keyboard-response", 
+                stimulus: "We will now begin the testing phase. <p>Press F for " + targetName + ". Press J for " + distractorName + ". Please go as quickly as you can without making mistakes.</p> <p>Press Space to begin.</p>",
+                choices: ["space"]
+            }
             ], 
             on_finish: function() {
                 tick_amount = 0.05
@@ -343,20 +330,20 @@
 
         var testing = {
             timeline: [
-                {
-                    type: "html-keyboard-response", 
-                    stimulus: function() {
-                        createBins(center);
-                        if (jsPsych.timelineVariable("name", true) == targetName) {
-                            var size = drawUniform(true);
-                        } else {
-                            var size = drawUniform(false);
-                        }
+            {
+                type: "html-keyboard-response", 
+                stimulus: function() {
+                    createBins(center);
+                    if (jsPsych.timelineVariable("name", true) == targetName) {
+                        var size = drawUniform(true);
+                    } else {
+                        var size = drawUniform(false);
+                    }
 
-                        return "<div class='displayed'>" + 
-                        "<div style='width: 700px;'>" + 
-                        "<div style='float: center;'>" + 
-                        "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>"
+                    return "<div class='displayed'>" + 
+                    "<div style='width: 700px;'>" + 
+                    "<div style='float: center;'>" + 
+                    "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>"
                         // + "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                         + "<div id='rectangle'></div>"
                     },
@@ -372,41 +359,41 @@
                     trial_duration: 1000,
                     data: {trial_name: 'feedback'}
                 }
-            ],
-            timeline_variables:  [
+                ],
+                timeline_variables:  [
                 {stimulus: targetShape, name: targetName},
                 {stimulus: distractorShape, name: distractorName}
-            ],
-            sample: {
-                type: "fixed-repetitions", 
-                size: 10
-            }, 
-            data: {
-                shape: jsPsych.timelineVariable("stimulus"),
-                name: jsPsych.timelineVariable("name")
-            }, 
-            on_finish: function(data) {
-                if (jsPsych.timelineVariable("name", true) == targetName) {
-                    data.object = 'big'
-                    if (data.key_press == 70) {
-                        data.correct = true;
-                    } else {
-                        data.correct = false;
+                ],
+                sample: {
+                    type: "fixed-repetitions", 
+                    size: 1
+                }, 
+                data: {
+                    shape: jsPsych.timelineVariable("stimulus"),
+                    name: jsPsych.timelineVariable("name")
+                }, 
+                on_finish: function(data) {
+                    if (jsPsych.timelineVariable("name", true) == targetName) {
+                        data.object = 'big'
+                        if (data.key_press == 70) {
+                            data.correct = true;
+                        } else {
+                            data.correct = false;
+                        }
+                    }  else {
+                        data.object = 'small'
+                        if (data.key_press == 74) {
+                            data.correct = true;
+                        } else {
+                            data.correct = false;
+                        }
                     }
-                }  else {
-                    data.object = 'small'
-                    if (data.key_press == 74) {
-                        data.correct = true;
-                    } else {
-                        data.correct = false;
-                    }
+                    data.phase = 'testing';
+                    data.objSize = size;
+                    tick_amount = 0.0075
+                    progress_bar += tick_amount
+                    jsPsych.setProgressBar(progress_bar);
                 }
-                data.phase = 'testing';
-                data.objSize = size;
-                tick_amount = 0.0075
-                progress_bar += tick_amount
-                jsPsych.setProgressBar(progress_bar);
-            }
             /*randomize_order: true,
             repetitions: 50*/
         }
@@ -447,8 +434,13 @@
                 auto_update_progress_bar: false,
                 preload_audio: audio,
                 use_webaudio: false,
-                on_finish: function() {  // comment this out later
-                    //jsPsych.data.displayData();
+                on_finish: function() {
+                    if (turkInfo.outsideTurk) {
+                        var file_name = a.anonymize("test_data")
+                    } else {
+                        var file_name = a.anonymize("data_data_data")
+                    }
+                    saveData(file_name, jsPsych.data.get().csv());
                     turk.submit(jsPsych.data.get().csv());
                 }
                 
