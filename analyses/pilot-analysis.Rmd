@@ -1,22 +1,31 @@
 ---
-title: "pilot-analysis"
-output: html_document
+title: "Compare processing pipelines"
+author: "Kevin Kim, Claire Bergey, and Dan Yurovsky"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+  highlight: tango
+theme: sandstone
+code_folding: show
+toc: false
+toc_float: false
 ---
-
+  
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(jsonlite)
 library(here)
 library(tidyboot)
+library(ggthemes)
 
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
                error = FALSE, cache = TRUE, tidy = FALSE)
 
-theme_set(theme_classic(base_size = 18))
+theme_set(theme_few(base_size = 14))
 ```
 
 
-```{r read-csv}
+```{r read-csv, eval = FALSE}
 read_file <- function(file) {
 
   path = paste("data/", file, sep = "")
@@ -29,146 +38,149 @@ read_file <- function(file) {
 
 file_list <- list.files(path = here("data/"), pattern = "\\.csv$")
 
-raw_data <- map(file_list, read_file) %>%
+raw_data <- map_dfr(file_list, read_file) %>%
   bind_rows() 
-```
-
-```{r data-prep}
-data <- raw_data %>%
-  mutate(rt = as.numeric(as.character(rt)),
-         correct = as.numeric(as.logical(correct)),
-         block = floor(trial_index/8),
-         size_bin = floor((objSize - 100)/40)) %>%
-  filter(rt < 3000, rt > 100) %>%
-  mutate(log_rt = log(rt))
 
 #write.csv(data, here("data/pilot-data.csv"))
 #data <- read.csv(here("data/pilot-data.csv"))
+```
 
-keep_subjs <- raw_data %>%
-  filter(phase == "training", trial_name == "trial") %>%
+```{r read-data}
+raw_data <- read_csv(here("data/pilot-data.csv")) %>%
+  select(-X1)
+```
+
+```{r prep-data, fig.width = 6, fig.height = 4}
+processed_data <- raw_data %>%
+  filter(!is.na(phase), phase %in% c("training", "testing")) %>%
+  mutate_at(vars(rt, correct), as.numeric) %>%
+  mutate(block = floor(trial_index/8),
+         size_bin = floor((objSize - 100)/40),
+         log_rt = log(rt))
+
+processed_data %>%
+  pivot_longer(cols = c(rt, log_rt), names_to = "measure") %>%
+  ggplot(aes(x = value)) +
+  facet_wrap(~ measure, scales = "free") +
+  geom_histogram()
+
+processed_data %>%
+  group_by(subid, phase) %>%
+  summarise(correct = mean(correct, na.rm = TRUE)) %>%
+  ggplot(aes(x = correct)) +
+  facet_wrap(~ phase, scales = "free") +
+  geom_histogram()
+```
+
+Response times are definitely skewed, log transforming them seems right. Cut off rts that are too fast or too slow?
+
+Training/test accuracy also looks super skewed. Also drop people below some threshold?
+
+```{r filtering}
+keep_subjs <- processed_data %>%
   group_by(subid) %>%
-  tidyboot_mean(correct) %>%
-  filter(empirical_stat > 0.7)
-
-training_data <- data %>%
-  filter(phase == "training", trial_name == "trial", subid %in% keep_subjs$subid)
-
-testing_data <- data %>%
-  filter(phase == "testing", trial_name == "trial", subid %in% keep_subjs$subid)
-
+  summarise(correct = mean(correct)) %>%
+  filter(correct >= .7) %>%
+  pull(subid)
 ```
 
-```{r accuracy-train}
-mean_training_accuracy <- training_data %>%
-  group_by(block, object) %>%
-  tidyboot_mean(correct)
+We're keeping `r length(keep_subjs)` out of `r nrow(distinct(processed_data, subid))` original participants
 
-mean_training_accuracy %>%
-  ggplot(aes(x = block, y = empirical_stat, color = object)) +
-  geom_line()
+```{r tidy-data}
+tidy_data <- processed_data %>%
+  filter(subid %in% keep_subjs) %>%
+  filter(rt >= 100 && rt <= 3000)
 ```
 
-Above: Accuracy over the course of training. People get more accurate as they learn.
+```{r accuracy-train,  fig.width = 10, fig.height = 4}
+training_accuracy <- tidy_data %>%
+  filter(phase == "training") %>%
+  group_by(block, object, subid) %>%
+  summarise_at(vars(correct, log_rt), mean) %>%
+  pivot_longer(cols = c(correct, log_rt), names_to = "measure") %>%
+  group_by(block, object, measure) %>%
+  tidyboot_mean(value)
 
-```{r accuracy-train-size}
-training_data %>%
-  group_by(size_bin, object) %>%
-  tidyboot_mean(correct) %>%
-  ggplot(aes(x = size_bin, y = empirical_stat, color = object)) +
-  geom_point() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper))
+ggplot(training_accuracy, aes(x = block, y = empirical_stat, 
+                                   color = object)) +
+  facet_wrap(~ measure, scales = "free") + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+  geom_line() +  
+  scale_color_ptol()
 ```
 
-Above: Accuracy in training by object size.
 
-```{r accuracy-test}
+Accuracy gets better, response times get faster.
 
-mean_testing_accuracy <- testing_data %>%
-  group_by(block, object) %>%
-  tidyboot_mean(correct)
+```{r accuracy-train-bin-block,  fig.width = 10, fig.height = 4}
+training_bin_accuracy <- tidy_data %>%
+  filter(phase == "training") %>%
+  group_by(block, object, size_bin, subid) %>%
+  summarise_at(vars(correct, log_rt), mean) %>%
+  pivot_longer(cols = c(correct, log_rt), names_to = "measure") %>%
+  group_by(block, object, size_bin, measure) %>%
+  tidyboot_mean(value)
 
-mean_testing_accuracy %>%
-  ggplot(aes(x = block, y = empirical_stat, color = object)) +
-  geom_line()
-  
-```
-
-Above: Accuracy in testing. 
-
-```{r accuracy-test-size}
-testing_data %>%
-  group_by(size_bin, object) %>%
-  tidyboot_mean(correct) %>%
-  ggplot(aes(x = size_bin, y = empirical_stat, color = object)) +
-  geom_point() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper))
-```
-
-Above: Accuracy in testing by object size. 
-
-```{r reaction-time-training}
-training_data %>%
-  group_by(block, object) %>%
-  tidyboot_mean(log_rt) %>%
-  ggplot(aes(x = block, y = empirical_stat, color = object)) +
+ggplot(training_bin_accuracy, aes(x = size_bin, y = empirical_stat, 
+                                   color = object)) +
+  facet_grid(measure ~ block, scales = "free") + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
   geom_line() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper))
+  scale_color_ptol()
 ```
 
-Above: log reaction time over training. People get faster as they learn.
+```{r accuracy-train-bin, fig.width = 10, fig.height = 4}
+training_bin_overall_accuracy <- tidy_data %>%
+  filter(phase == "training") %>%
+  group_by(object, size_bin, subid) %>%
+  summarise_at(vars(correct, log_rt), mean) %>%
+  pivot_longer(cols = c(correct, log_rt), names_to = "measure") %>%
+  group_by(object, size_bin, measure) %>%
+  tidyboot_mean(value)
 
-```{r reaction-time-training-size}
-training_data %>%
-  ggplot(aes(x = objSize, y = log_rt, color = object, alpha = 0.4)) +
-  geom_point() +
-  facet_wrap(~correct)
+ggplot(training_bin_overall_accuracy, aes(x = size_bin, y = empirical_stat, 
+                                   color = object)) +
+  facet_wrap(~ measure, scales = "free") + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),
+                  position = position_dodge(.5)) + 
+  geom_line() + 
+  scale_color_ptol()
 ```
 
-Above: log reaction time by object size in training.
+Some hint of an effect where the big object is faster/more accurate for big sizes and small is faster/more accurate for small sizes? but super noisy
 
-```{r reaction-time-testing-size}
-testing_data %>%
-  ggplot(aes(x = objSize, y = log_rt, color = object, alpha = 0.4)) +
-  geom_point() +
-  facet_wrap(~correct)
+```{r accuracy-test-bin-block,  fig.width = 10, fig.height = 4}
+test_bin_accuracy <- tidy_data %>%
+  filter(phase == "testing") %>%
+  group_by(object, size_bin, subid) %>%
+  summarise_at(vars(correct, log_rt), mean) %>%
+  pivot_longer(cols = c(correct, log_rt), names_to = "measure") %>%
+  group_by(object, size_bin, measure) %>%
+  tidyboot_mean(value)
+
+ggplot(test_bin_accuracy, aes(x = size_bin, y = empirical_stat, 
+                                   color = object)) +
+  facet_wrap(~ measure, scales = "free") + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),
+                  position = position_dodge(.5)) + 
+  geom_line() +
+  scale_color_ptol()
 ```
 
-Above: log reaction time by object size in testing.
+Unclear what's happening. Maybe some hint of the accuracy effect in that super restricted range? Try subsetting to just correct trials
 
-```{r reaction-time-training-size-bin}
-training_data %>%
-  filter(correct == 1) %>%
-  group_by(size_bin, object) %>%
-  tidyboot_mean(log_rt) %>%
-  ggplot(aes(x = size_bin, y = empirical_stat, color = object)) +
-  geom_point() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper))
-```
+```{r accuracy-test, fig.width = 6, fig.height = 4}
+test_bin_rt <- tidy_data %>%
+  filter(phase == "testing", correct == 1) %>%
+  group_by(object, size_bin, subid) %>%
+  summarise(log_rt = mean(log_rt)) %>%
+  tidyboot_mean(log_rt)
 
-Above: log reaction time by binned object size in training, among correct trials.
-
-```{r reaction-time-testing-size-bin}
-testing_data %>%
-  filter(correct == 1) %>%
-  group_by(size_bin, object) %>%
-  tidyboot_mean(log_rt) %>%
-  ggplot(aes(x = size_bin, y = empirical_stat, color = object)) +
-  geom_point() +
-  geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper))
-```
-
-Above: log reaction time by binned object size in testing, among correct trials.
-
-```{r acc-by-rt}
-training_data %>%
-  mutate(size_bin = as.factor(size_bin)) %>%
-  ggplot(aes(x = size_bin, y = log_rt, color = object)) +
-  geom_boxplot()
-
-testing_data %>%
-  mutate(size_bin = as.factor(size_bin)) %>%
-  ggplot(aes(x = size_bin, y = log_rt, color = object)) +
-  geom_boxplot() 
-
+ggplot(test_bin_rt, aes(x = size_bin, y = empirical_stat, 
+                                   color = object)) +
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),
+                  position = position_dodge(.5)) + 
+  geom_line() + 
+  labs(y = "log response time") +
+  scale_color_ptol()
 ```

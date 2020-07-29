@@ -42,3 +42,6 @@ settings.json
 production-results/*
 
 *.DS_Store
+
+*/*cache/*
+*/*files/*
