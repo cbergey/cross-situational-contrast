@@ -17,6 +17,9 @@ library(jsonlite)
 library(here)
 library(tidyboot)
 library(ggthemes)
+library(lme4)
+library(effectsize)
+library(broom.mixed)
 
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
                error = FALSE, cache = TRUE, tidy = FALSE)
@@ -54,14 +57,14 @@ raw_data <- read_csv(here("data/pilot-data.csv")) %>%
 processed_data <- raw_data %>%
   filter(!is.na(phase), phase %in% c("training", "testing")) %>%
   mutate_at(vars(rt, correct), as.numeric) %>%
-  mutate(block = floor(trial_index/8),
-         size_bin = floor((objSize - 100)/40),
+  mutate(block = floor(trial_index/8) + 1,
+         size_bin = floor((objSize - 100)/40) + 1,
          log_rt = log(rt))
 
 processed_data %>%
   pivot_longer(cols = c(rt, log_rt), names_to = "measure") %>%
   ggplot(aes(x = value)) +
-  facet_wrap(~ measure, scales = "free") +
+  facet_grid(phase ~ measure, scales = "free") +
   geom_histogram()
 
 processed_data %>%
@@ -90,6 +93,14 @@ We're keeping `r length(keep_subjs)` out of `r nrow(distinct(processed_data, sub
 tidy_data <- processed_data %>%
   filter(subid %in% keep_subjs) %>%
   filter(rt >= 100 && rt <= 3000)
+```
+
+```{r sizes}
+tidy_data %>%
+  filter(phase == "testing") %>%
+  ggplot(aes(x = size_bin, y = objSize, color = object)) + 
+  geom_point(position = position_jitter(height = 0, width = .1))
+  
 ```
 
 ```{r accuracy-train,  fig.width = 10, fig.height = 4}
@@ -183,4 +194,22 @@ ggplot(test_bin_rt, aes(x = size_bin, y = empirical_stat,
   geom_line() + 
   labs(y = "log response time") +
   scale_color_ptol()
+```
+
+model
+```{r}
+model_data <- tidy_data %>%
+  filter(phase == "testing") %>%
+  mutate(transformed_bin = if_else(object == "big", abs(size_bin - 7),
+                                   abs(size_bin - 3))) %>%
+  mutate(dummy = if_else(transformed_bin == 0, 1, 0))
+
+model <- glmer(correct ~ transformed_bin + (1|subid) + object, 
+               family = "binomial", data = model_data) %>%
+  tidy() %>%
+  filter(effect == "fixed") %>%
+  select(-effect, -group, -std.error) %>%
+  mutate(d = odds_to_d(estimate, log = TRUE))
+
+model
 ```
