@@ -7,7 +7,7 @@
         var turkInfo = jsPsych.turk.turkInfo();
 
         // anonymizer for worker IDs
-        var a = new DataAnonymizer();
+        //var a = new DataAnonymizer();
 
 
         var consent_form = {
