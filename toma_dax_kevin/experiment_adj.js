@@ -228,11 +228,24 @@
 
                     createBins(center);
 
+                    var audioSwitch = "";
+
                     if (jsPsych.timelineVariable("name", true) == targetName) {
                         var size = drawFeature(true);
+                        // if size is in range of 260-340 for this big/target object
+                        //      audioSwitch = small target audio
                     } else {
                         var size = drawFeature(false);
+                        // if size is in range of 220-300 for this small/distractor object
+                        //      audioSwitch = big distractor audio
                     }
+
+                    // if audioSwitch == ""
+                    //      var outAudio = jsPsych.timelineVariable("name", true);
+                    // else 
+                    //      var outAudio = audioSwitch;
+                    
+                    // change code below for audio src
 
                     return "<audio src='stimsounds/" + jsPsych.timelineVariable("name", true) + ".mp3', autoplay='true'></audio>" + 
                     "<div class='displayed'>" + 
@@ -242,7 +255,7 @@
                     "<img src='stim-images/object" + jsPsych.timelineVariable("stimulus", true) + "bluebig.jpg' width='" + size + "' height='" + size + "'></img></div></div></div>"
                     //+ "<div class='absolute'><p>Press F for all " + targetName + " objects. Press J for all " +  distractorName + " objects.</p></div>" + "size" + size
                 },
-                choices: ["f", "j"],  // target is F, distractor is J
+                choices: ["f", "j"],  // target is F (bigger), distractor is J (smaller)
                 data: {trial_name: 'trial'} 
                 /*
                 response_ends_trial: false,
@@ -277,8 +290,8 @@
             }
             ],
             timeline_variables:  [
-            {stimulus: targetShape, name: targetName},
-            {stimulus: distractorShape, name: distractorName}
+                {stimulus: targetShape, name: targetName},
+                {stimulus: distractorShape, name: distractorName}
             ],
             sample: {
                 type: "fixed-repetitions", 
