@@ -232,22 +232,27 @@
 
                     if (jsPsych.timelineVariable("name", true) == targetName) {
                         var size = drawFeature(true);
+                        if (size >= 260 && size <= 340) {
+                            audioSwitch = "small" + targetName;
+                        }
                         // if size is in range of 260-340 for this big/target object
                         //      audioSwitch = small target audio
                     } else {
                         var size = drawFeature(false);
+                        if (size >= 220 && size <= 300) {
+                            audioSwitch = "big" + distractorName;
+                        }
                         // if size is in range of 220-300 for this small/distractor object
                         //      audioSwitch = big distractor audio
                     }
 
-                    // if audioSwitch == ""
-                    //      var outAudio = jsPsych.timelineVariable("name", true);
-                    // else 
-                    //      var outAudio = audioSwitch;
-                    
-                    // change code below for audio src
+                    if (audioSwitch == "") {
+                        var outAudio = jsPsych.timelineVariable("name", true);
+                    } else {
+                        var outAudio = audioSwitch;
+                    }
 
-                    return "<audio src='stimsounds/" + jsPsych.timelineVariable("name", true) + ".mp3', autoplay='true'></audio>" + 
+                    return "<audio src='stimsounds/" + outAudio + ".wav', autoplay='true'></audio>" + 
                     "<div class='displayed'>" + 
                     "<div style='width: 700px;'>" + 
                     "<div style='float: center;'>" + 
@@ -295,7 +300,7 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 1
+                size: 10
             }, 
             data: {
                 shape: jsPsych.timelineVariable("stimulus"),
@@ -383,7 +388,7 @@
             ],
             sample: {
                 type: "fixed-repetitions", 
-                size: 1
+                size: 10
             }, 
             data: {
                 shape: jsPsych.timelineVariable("stimulus"),
