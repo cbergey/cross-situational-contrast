@@ -19,7 +19,7 @@ theme_set(theme_classic(base_size = 18))
 ```{r read-csv}
 read_file <- function(file) {
 
-  path = paste("data/", file, sep = "")
+  path = paste("data/raw-data/", file, sep = "")
   csv_out <- read_csv(here(path))
   id <- str_remove(file, ".csv")
   csv_out$subid <- rep(id, nrow(csv_out))
@@ -27,7 +27,7 @@ read_file <- function(file) {
  return(csv_out)
 }
 
-file_list <- list.files(path = here("data/"), pattern = "\\.csv$")
+file_list <- list.files(path = here("data/raw-data/"), pattern = "\\.csv$")
 
 raw_data <- map(file_list, read_file) %>%
   bind_rows() 
@@ -38,12 +38,14 @@ data <- raw_data %>%
   mutate(rt = as.numeric(as.character(rt)),
          correct = as.numeric(as.logical(correct)),
          block = floor(trial_index/8),
-         size_bin = floor((objSize - 100)/40)) %>%
-  filter(rt < 3000, rt > 100) %>%
-  mutate(log_rt = log(rt))
+         size_bin = floor((objSize - 100)/40),
+         log_rt = log(rt))
 
 #write.csv(data, here("data/pilot-data.csv"))
 #data <- read.csv(here("data/pilot-data.csv"))
+
+data <- data %>%
+  filter(rt < 3000, rt > 100)
 
 keep_subjs <- raw_data %>%
   filter(phase == "training", trial_name == "trial") %>%

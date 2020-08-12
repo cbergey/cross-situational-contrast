@@ -381,7 +381,7 @@ summary {
 
 <pre class="r"><code>read_file &lt;- function(file) {
 
-  path = paste(&quot;data/&quot;, file, sep = &quot;&quot;)
+  path = paste(&quot;data/raw-data/&quot;, file, sep = &quot;&quot;)
   csv_out &lt;- read_csv(here(path))
   id &lt;- str_remove(file, &quot;.csv&quot;)
   csv_out$subid &lt;- rep(id, nrow(csv_out))
@@ -389,7 +389,7 @@ summary {
  return(csv_out)
 }
 
-file_list &lt;- list.files(path = here(&quot;data/&quot;), pattern = &quot;\\.csv$&quot;)
+file_list &lt;- list.files(path = here(&quot;data/raw-data/&quot;), pattern = &quot;\\.csv$&quot;)
 
 raw_data &lt;- map(file_list, read_file) %&gt;%
   bind_rows() </code></pre>
@@ -397,9 +397,14 @@ raw_data &lt;- map(file_list, read_file) %&gt;%
   mutate(rt = as.numeric(as.character(rt)),
          correct = as.numeric(as.logical(correct)),
          block = floor(trial_index/8),
-         size_bin = floor((objSize - 100)/40)) %&gt;%
-  filter(rt &lt; 3000, rt &gt; 100) %&gt;%
-  mutate(log_rt = log(rt))
+         size_bin = floor((objSize - 100)/40),
+         log_rt = log(rt))
+
+#write.csv(data, here(&quot;data/pilot-data.csv&quot;))
+#data &lt;- read.csv(here(&quot;data/pilot-data.csv&quot;))
+
+data &lt;- data %&gt;%
+  filter(rt &lt; 3000, rt &gt; 100)
 
 keep_subjs &lt;- raw_data %&gt;%
   filter(phase == &quot;training&quot;, trial_name == &quot;trial&quot;) %&gt;%
