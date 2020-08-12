@@ -20,6 +20,8 @@ library(ggthemes)
 library(lme4)
 library(effectsize)
 library(broom.mixed)
+library(ggthemes)
+library(data.table)
 
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
                error = FALSE, cache = TRUE, tidy = FALSE)
@@ -62,7 +64,8 @@ raw_data <- read_csv(here("data/pilot-data.csv")) %>%
 
 ```{r prep-data, fig.width = 6, fig.height = 4}
 processed_data <- raw_data %>%
-  filter(!is.na(phase), phase %in% c("training", "testing")) %>%
+  filter(!is.na(phase), phase %in% c("training", "testing"),
+         trial_name != "feedback") %>%
   mutate_at(vars(rt, correct), as.numeric) %>%
   mutate(block = floor(trial_index/8) + 1,
          size_bin = floor((objSize - 100)/40) + 1,
@@ -110,7 +113,7 @@ tidy_data %>%
   
 ```
 
-```{r accuracy-train,  fig.width = 10, fig.height = 4}
+```{r training-acc}
 training_accuracy <- tidy_data %>%
   filter(phase == "training") %>%
   group_by(block, object, subid) %>%
@@ -118,10 +121,12 @@ training_accuracy <- tidy_data %>%
   pivot_longer(cols = c(correct, log_rt), names_to = "measure") %>%
   group_by(block, object, measure) %>%
   tidyboot_mean(value)
+```
 
+```{r accuracy-train,  fig.width = 10, fig.height = 4}
 ggplot(training_accuracy, aes(x = block, y = empirical_stat, 
                                    color = object)) +
-  facet_wrap(~ measure, scales = "free") + 
+  facet_wrap(~measure, scales = "free") + 
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
   geom_line() +  
   scale_color_ptol()
