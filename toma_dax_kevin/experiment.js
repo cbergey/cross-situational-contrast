@@ -277,8 +277,8 @@
                 }
                 ],
                 timeline_variables:  [
-                {stimulus: targetShape, name: targetName},
-                {stimulus: distractorShape, name: distractorName}
+                    {stimulus: targetShape, name: targetName},
+                    {stimulus: distractorShape, name: distractorName}
                 ],
                 sample: {
                     type: "fixed-repetitions", 
