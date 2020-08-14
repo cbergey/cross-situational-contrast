@@ -209,19 +209,21 @@ ggplot(test_bin_rt, aes(x = size_bin, y = empirical_stat,
 ```
 
 model
-```{r}
+```{r model}
 model_data <- tidy_data %>%
   filter(phase == "testing") %>%
-  mutate(transformed_bin = if_else(object == "big", abs(size_bin - 7),
-                                   abs(size_bin - 3))) %>%
+  mutate(transformed_bin = if_else(object == "big", 9 - size_bin,
+                                    size_bin - 1)) %>%
   mutate(dummy = if_else(transformed_bin == 0, 1, 0))
+
 
 model <- glmer(correct ~ transformed_bin + (1|subid) + object, 
                family = "binomial", data = model_data) %>%
   tidy() %>%
   filter(effect == "fixed") %>%
   select(-effect, -group, -std.error) %>%
-  mutate(d = odds_to_d(estimate, log = TRUE))
+  mutate(d = odds_to_d(estimate, log = TRUE),
+         p = papaja::printp(p.value))
 
 model
 ```
